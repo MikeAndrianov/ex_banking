@@ -3,6 +3,8 @@ defmodule ExBanking do
   Documentation for ExBanking.
   """
 
+  alias ExBanking.User
+
   @type banking_error :: {:error,
     :wrong_arguments                |
     :user_already_exists            |
@@ -21,6 +23,7 @@ defmodule ExBanking do
   """
   @spec create_user(user :: String.t) :: :ok | banking_error
   def create_user(user) do
+    # Bank.create_user(user)
   end
 
   @doc """
@@ -29,6 +32,9 @@ defmodule ExBanking do
   """
   @spec deposit(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error
   def deposit(user, amount, currency) do
+    # Bank.deposit
+
+    # {:ok, amount}
   end
 
   @doc """
