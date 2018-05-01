@@ -11,8 +11,9 @@ defmodule ExBanking.User do
     end
   end
 
+  def get_balance(%User{balance: balance}, currency), do: Balance.get_amount(balance, currency)
+
   def update_balance(%User{balance: balance} = user, amount, currency) do
-    # ...
     case Balance.update(balance, amount, currency) do
       {:ok, balance, amount} ->
         {:ok, %{user | balance: balance}, amount}

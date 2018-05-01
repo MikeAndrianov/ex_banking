@@ -11,8 +11,6 @@ defmodule UserTest do
   end
 
   describe "update_balance/3" do
-    # deposit could be more than 0!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     test "updates amount for currency" do
       user = %User{balance: %Balance{currencies: %{"USD" => 10}}}
 
@@ -23,7 +21,7 @@ defmodule UserTest do
     test "returns error when balance was not updated" do
       user = %User{balance: %Balance{currencies: %{"USD" => 10}}}
 
-      assert {:error, :wrong_arguments} == User.update_balance(user, -15, "USD")
+      assert {:error, :not_enough_money} == User.update_balance(user, -15, "USD")
     end
   end
 end

@@ -69,11 +69,85 @@ defmodule BankTest do
           users: %{
             "Joe" => %User{name: "Joe"},
             "John" => %User{name: "John", balance: johns_balance}
-          } = users
+          }
         },
         10
       } = Bank.deposit(bank, "Joe", 10, "EUR")
       assert johns_balance.currencies == %{"USD" => 0, "EUR" => 0}
+    end
+  end
+
+  describe "withdraw/4" do
+    test "returns error if amount less than 0" do
+      {:ok, bank, _user} =
+        %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
+        |> Bank.create_user("Joe")
+
+      assert Bank.withdraw(bank, "Joe", -10, "USD") == {:error, :wrong_arguments}
+    end
+
+    test "updates user balance" do
+      {:ok, bank, _user} =
+        %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
+        |> Bank.create_user("Joe")
+      {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
+
+      assert {:ok, %Bank{}, 20} = Bank.withdraw(bank, "Joe", 10, "USD")
+    end
+
+    test "returns error if user was not found" do
+      bank = %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
+
+      assert {:error, :user_does_not_exist} = Bank.withdraw(bank, "Joe", 10, "USD")
+    end
+  end
+
+  describe "get_balance/3" do
+    test "returns amount for existing user" do
+      {:ok, bank, _user} =
+        %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
+        |> Bank.create_user("Joe")
+      {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
+
+      assert {:ok, %Bank{}, 30} = Bank.get_balance(bank, "Joe", "USD")
+    end
+
+    test "returns error if user was not found" do
+      bank = %Bank{users: %{}}
+
+      assert Bank.get_balance(bank, "Joe", "USD") == {:error, :user_does_not_exist}
+    end
+  end
+
+  describe "send/5" do
+    test "updates sender and receiver balances" do
+      {:ok, bank, _user} =
+        %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
+        |> Bank.create_user("Joe")
+      {:ok, bank, _user} = bank |> Bank.create_user("James")
+      {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
+
+      assert {:ok, %Bank{}, 20, 10} = Bank.send(bank, "Joe", "James", 10, "USD")
+    end
+
+    test "returns error if user was not found" do
+      {:ok, bank, _user} =
+        %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
+        |> Bank.create_user("Joe")
+      {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
+
+      assert {:error, :receiver_does_not_exist} = Bank.send(bank, "Joe", "James", 10, "USD")
+      assert {:error, :sender_does_not_exist} = Bank.send(bank, "James", "Joe", 10, "USD")
+    end
+
+    test "return error if currency does not exist" do
+      {:ok, bank, _user} =
+        %Bank{users: %{}, currencies: MapSet.new(["USD"])}
+        |> Bank.create_user("Joe")
+      {:ok, bank, _user} = bank |> Bank.create_user("James")
+      {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
+
+      assert {:error, :wrong_arguments} = Bank.send(bank, "Joe", "James", 10, "EUR")
     end
   end
 end

@@ -20,7 +20,13 @@ defmodule BalanceTest do
     test "returns error when result amount less than 0" do
       balance = %Balance{currencies: %{"USD" => 10}}
 
-      assert {:error, :wrong_arguments} == Balance.update(balance, -15, "USD")
+      assert {:error, :not_enough_money} == Balance.update(balance, -15, "USD")
+    end
+
+    test "returns error when currency is absent" do
+      balance = %Balance{currencies: %{"USD" => 10}}
+
+      assert {:error, :wrong_arguments} == Balance.update(balance, -15, "EUR")
     end
   end
 end
