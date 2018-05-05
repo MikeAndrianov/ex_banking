@@ -4,7 +4,7 @@ defmodule BankTest do
 
   describe "new/0" do
     test "creates new bank" do
-      {:ok, %Bank{users: users, currencies: currencies}} = Bank.new
+      %Bank{users: users, currencies: currencies} = Bank.new
 
       assert users == %{}
       assert currencies == MapSet.new()
@@ -13,10 +13,8 @@ defmodule BankTest do
 
   describe "create_user/2" do
     test "adds user to bank" do
-      {:ok, bank} = Bank.new
-
       assert {:ok, %Bank{users: %{"Joe" => %User{name: "Joe"} = user}}, user} =
-        bank |> Bank.create_user("Joe")
+        Bank.new |> Bank.create_user("Joe")
     end
 
     test "refuses to add user with same name" do
@@ -38,9 +36,9 @@ defmodule BankTest do
       {:ok, bank, _user} =
         %Bank{users: %{}, currencies: MapSet.new(["USD", "EUR"])}
         |> Bank.create_user("Joe")
-      {:ok, %Bank{} = bank, 10} = Bank.deposit(bank, "Joe", 10, "USD")
+      {:ok, %Bank{} = bank, 10.0} = Bank.deposit(bank, "Joe", 10, "USD")
 
-      assert {:ok, %Bank{}, 20} = Bank.deposit(bank, "Joe", 10, "USD")
+      assert {:ok, %Bank{}, 20.0} = Bank.deposit(bank, "Joe", 10, "USD")
     end
 
     test "returns error if user was not found" do
@@ -71,7 +69,7 @@ defmodule BankTest do
             "John" => %User{name: "John", balance: johns_balance}
           }
         },
-        10
+        10.0
       } = Bank.deposit(bank, "Joe", 10, "EUR")
       assert johns_balance.currencies == %{"USD" => 0, "EUR" => 0}
     end
@@ -92,7 +90,7 @@ defmodule BankTest do
         |> Bank.create_user("Joe")
       {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
 
-      assert {:ok, %Bank{}, 20} = Bank.withdraw(bank, "Joe", 10, "USD")
+      assert {:ok, %Bank{}, 20.0} = Bank.withdraw(bank, "Joe", 10, "USD")
     end
 
     test "returns error if user was not found" do
@@ -109,7 +107,7 @@ defmodule BankTest do
         |> Bank.create_user("Joe")
       {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
 
-      assert {:ok, %Bank{}, 30} = Bank.get_balance(bank, "Joe", "USD")
+      assert {:ok, %Bank{}, 30.0} = Bank.get_balance(bank, "Joe", "USD")
     end
 
     test "returns error if user was not found" do
@@ -127,7 +125,7 @@ defmodule BankTest do
       {:ok, bank, _user} = bank |> Bank.create_user("James")
       {:ok, bank, _amount} = Bank.deposit(bank, "Joe", 30, "USD")
 
-      assert {:ok, %Bank{}, 20, 10} = Bank.send(bank, "Joe", "James", 10, "USD")
+      assert {:ok, %Bank{}, 20.0, 10.0} = Bank.send(bank, "Joe", "James", 10, "USD")
     end
 
     test "returns error if user was not found" do

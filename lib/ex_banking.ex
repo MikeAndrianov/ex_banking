@@ -4,7 +4,7 @@ defmodule ExBanking do
   """
 
   use GenServer
-  alias ExBanking.{User, Bank}
+  alias ExBanking.Bank
 
   @type banking_error :: {:error,
     :wrong_arguments                |
@@ -19,8 +19,7 @@ defmodule ExBanking do
   }
 
   def start_link(_args) do
-    {:ok, bank} = Bank.new()
-    {:ok, _pid} = GenServer.start_link(__MODULE__, bank, name: __MODULE__)
+    {:ok, _pid} = GenServer.start_link(__MODULE__, Bank.new(), name: __MODULE__)
   end
 
   @doc """

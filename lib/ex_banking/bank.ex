@@ -3,7 +3,7 @@ defmodule ExBanking.Bank do
 
   defstruct [:users, :currencies]
 
-  def new(), do: {:ok, %Bank{users: %{}, currencies: MapSet.new()}}
+  def new(), do: %Bank{users: %{}, currencies: MapSet.new()}
 
   def create_user(%Bank{users: users, currencies: currencies} = bank, name) do
     with {:error, :user_does_not_exist} <- find_user(bank, name),

@@ -5,7 +5,7 @@ defmodule ExBanking.Balance do
   defstruct [:currencies]
 
   def new(currencies) do
-    {:ok, %Balance{currencies: Map.new(currencies, fn(currency) -> {currency, 0} end)}}
+    {:ok, %Balance{currencies: Map.new(currencies, fn(currency) -> {currency, 0.0} end)}}
   end
 
   def get_amount(%Balance{currencies: currencies}, currency) do
@@ -13,8 +13,12 @@ defmodule ExBanking.Balance do
   end
 
   def update(%Balance{currencies: currencies} = balance, amount, currency) do
-    with {:ok, current_amount} <- get_amount(balance, currency),
-      true <- (updated_amount = current_amount + amount) && updated_amount >= 0
+    with {:ok, current_amount} <- balance |> get_amount(currency),
+      updated_amount <- Decimal.new(current_amount)
+        |> Decimal.add(Decimal.new(amount))
+        |> Decimal.round(2, :down)
+        |> Decimal.to_float,
+      true <- updated_amount >= 0
     do
       {:ok, %{balance | currencies: %{currencies | currency => updated_amount}}, updated_amount}
     else

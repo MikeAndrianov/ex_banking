@@ -14,8 +14,8 @@ defmodule UserTest do
     test "updates amount for currency" do
       user = %User{balance: %Balance{currencies: %{"USD" => 10}}}
 
-      assert {:ok, %User{balance: balance}, 15} =  User.update_balance(user, 5, "USD")
-      assert balance.currencies["USD"] == 15
+      assert {:ok, %User{balance: balance}, 15.0} =  User.update_balance(user, 5, "USD")
+      assert balance.currencies["USD"] == 15.0
     end
 
     test "returns error when balance was not updated" do

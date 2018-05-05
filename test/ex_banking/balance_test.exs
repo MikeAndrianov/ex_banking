@@ -14,7 +14,13 @@ defmodule BalanceTest do
     test "updates amount for currency" do
       balance = %Balance{currencies: %{"USD" => 10}}
 
-      assert {:ok, %Balance{currencies: %{"USD" => 15}}, 15} =  Balance.update(balance, 5, "USD")
+      assert {:ok, %Balance{currencies: %{"USD" => 15.0}}, 15.0} =  Balance.update(balance, 5, "USD")
+    end
+
+    test "rounds down money amount" do
+      balance = %Balance{currencies: %{"USD" => 10}}
+
+      assert {:ok, %Balance{currencies: %{"USD" => 11.56}}, 11.56} =  Balance.update(balance, 1.567, "USD")
     end
 
     test "returns error when result amount less than 0" do
